@@ -26,7 +26,7 @@ require_once("watch_station_data_parser.php");
 
 
 interface ParseStore {
-	public function UpdateProducts($for_whom);
+	public function UpdateProducts();
 	public function UpdatePrices();
 }
 

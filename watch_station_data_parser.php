@@ -55,28 +55,89 @@ class WatchStationParser implements ParseStore {
 
  		$intersect = array_intersect($only_sku_2, $only_sku_1);
 
-		$final_array = array();
-
 		foreach ($array1 as $item) {
-			$final_array[] = $item + array('for_whom'=>'man');
+			$this->productsAndPricesArray[] = $item + array('brand_n_model'=>$item['brand']."/".$item['imagePath'] ,'for_whom' => 'man');
 		}
 
 		foreach ($array2 as $item) {
 			$needle = $item['brand']."-".$item['imagePath'];
 			if (!in_array ($needle, $intersect)) {
-				$final_array[] = $item + array('for_whom' => 'woman');
+				$this->productsAndPricesArray[] = $item + array('brand_n_model'=>$item['brand']."/".$item['imagePath'] ,'for_whom' => 'woman');
 			}
 		}
 
-		foreach ($final_array as &$item) {
+		foreach ($this->productsAndPricesArray as &$item) {
 			$needle = $item['brand']."-".$item['imagePath'];
 			if (in_array ($needle , $intersect)) {
 				$item['for_whom'] = "man,woman";
 			}
-		}		
+		}
+	}
+
+
+
+	public function UpdateProducts() {
+		$sql  = "SELECT DISTINCT concat(brand,'/',  model) as brand_n_model ";
+		$sql .= " FROM products ";
+
+
+		$result = $this->db->query($sql);
+
+		$aaa  = array();
+		if ($result->num_rows > 0) {
+			$aaa = array_reduce(
+				$result->rows, function ($one_dimensional, $value) {
+					return array_merge($one_dimensional, array_values($value));
+				}, array()
+			);
+			$insert_data = array();
+		}
+
+
+
+		
+		$insert_data = array();
+		foreach ($this->productsAndPricesArray as $item) {
+			$value_to_find = $item['brand_n_model'];
+			if (!in_array($value_to_find, $aaa )) {
+				$insert_data[] = $item;
+			} else {
+				$item['brand_n_model'] = "ZZZZZZZZZZZZZZZZ";
+			}
+		}
+
+
+		if (count($insert_data) > 0) {
+			foreach ($insert_data as $insert) {
+
+				if (strlen($insert['brand']) > 1) {
+					$sql  = "INSERT INTO products  SET ";
+					$sql  .= "brand = '".$this->db->escape($insert['brand'])."', ";
+					$sql  .= "model = '".$this->db->escape($insert['imagePath'])."', ";
+					$sql  .= "product_name = '".$this->db->escape($insert['name'])."', ";
+					$sql  .= "for_whom = '".$this->db->escape($insert['for_whom'])."', ";
+					$sql  .= "tmp = '".$this->db->escape($insert['brand'])."'  ";
+					$result = $this->db->query($sql);
+				} else {}
+			}
+		}
+
+
+		print "<pre>";
+		print_r( $insert_data );
+		print "</pre>";
+		exit;
+
+
+
+
+
 
 	}
 
+
+
+// ==============================================================================
 
 	public function UpdataeWatchStationPrices() {
 		//$watchstation = new WatchStationParser($this->db);
@@ -93,8 +154,8 @@ class WatchStationParser implements ParseStore {
 		// $watchstation->UpdatePrices();
 	}
 
-	public function UpdateProducts($for_whom) {
-
+	public function UpdateProducts1($for_whom) {
+return;
 		$sql  = "SELECT DISTINCT concat(brand,'/',  model,'/', for_man,'/', for_woman) as brand_n_model ";
 		$sql .= " FROM products ";
 		if ($for_whom == 'man') {
@@ -155,7 +216,7 @@ class WatchStationParser implements ParseStore {
 
 
 	public function PrepareProductsAndPricesArray($rawDataToParse) {
- 	
+ 	return;
 		$lines = explode("\n", $this->rawDataToParse);
 		$array = array();
 		foreach ($lines as $line) {
@@ -211,6 +272,7 @@ class WatchStationParser implements ParseStore {
 		// zrob cala liste array produktow
 // brand/model
 
+		return;
 		 // i porownac czy co te rekordy takze w bazie
 		$sql = "SELECT DISTINCT id, concat(brand,'/',  model) as brand_n_model FROM products ";
 		$database_data = array();

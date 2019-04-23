@@ -18,6 +18,8 @@ class StoresParser {
 	public function UpdataeWatchStationProductAndPrices() {
 		$a = new WatchStationParser($this->db);
 		$a->PrepareRawDataBasedOnFiles("source_data_files/man.html", "source_data_files/woman.html");
+		$a->UpdateProducts();
+
 	}
 
 }
