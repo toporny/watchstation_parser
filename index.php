@@ -1,4 +1,6 @@
 <?php
+	require_once("config.php");
+	require_once("libs/mysqli.php");
 	include("parser_website.php"); 
 	$WatchWatcher = new WatchWatcher();
 ?>
@@ -16,7 +18,7 @@
     <title><?=$WatchWatcher->getTitle();?></title>
   </head>
   <body>
-	<?=$WatchWatcher->getWebsiteContent();?>
+	<?=$WatchWatcher->showTables();?>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
